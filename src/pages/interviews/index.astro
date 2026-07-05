@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content';
+import ContentCard from '@/components/ContentCard.astro';
+import PageHero from '@/components/PageHero.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getStatusLabel, sortByDateDesc } from '@/lib/content-utils';
+
+const interviews = sortByDateDesc(await getCollection('interviews'));
+---
+
+<BaseLayout title="面试复盘">
+  <PageHero
+    eyebrow="Interview Reviews"
+    title="面试复盘"
+    summary="每次面试都会沉淀成一页：原始情况、回答质量、暴露问题、更优回答和后续复习任务。"
+  />
+  <section class="grid">
+    {
+      interviews.map((entry) => (
+        <ContentCard
+          href={`/interviews/${entry.slug}/`}
+          title={entry.data.title}
+          summary={`${entry.data.company} · ${entry.data.role} · ${getStatusLabel(entry.data.status)}。${entry.data.summary}`}
+          date={entry.data.date}
+          tags={entry.data.tags}
+        />
+      ))
+    }
+  </section>
+</BaseLayout>

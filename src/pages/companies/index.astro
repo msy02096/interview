@@ -1,0 +1,29 @@
+---
+import { getCollection } from 'astro:content';
+import ContentCard from '@/components/ContentCard.astro';
+import PageHero from '@/components/PageHero.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const companies = await getCollection('companies');
+---
+
+<BaseLayout title="公司">
+  <PageHero
+    eyebrow="Company Notes"
+    title="公司记录"
+    summary="按公司和岗位整理面试进度、岗位关注点、复盘结论和下次准备重点。"
+  />
+  <section class="grid">
+    {
+      companies.map((entry) => (
+        <ContentCard
+          href={`/companies/${entry.slug}/`}
+          title={entry.data.title}
+          summary={`${entry.data.role} · ${entry.data.stage}。${entry.data.summary}`}
+          date={entry.data.lastInterviewDate}
+          tags={entry.data.tags}
+        />
+      ))
+    }
+  </section>
+</BaseLayout>

@@ -1,0 +1,78 @@
+---
+import { getCollection } from 'astro:content';
+import ContentCard from '@/components/ContentCard.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getStatusLabel, sortByDateDesc } from '@/lib/content-utils';
+
+const interviews = sortByDateDesc(await getCollection('interviews'));
+const companies = await getCollection('companies');
+const questions = await getCollection('questions');
+const knowledge = await getCollection('knowledge');
+const latestInterviews = interviews.slice(0, 3);
+const highPriorityKnowledge = knowledge.filter((entry) => entry.data.priority === '高');
+---
+
+<BaseLayout title="总览">
+  <section class="dashboard-hero">
+    <p class="eyebrow">Personal Interview OS</p>
+    <h1>把每次面试都变成下一次的准备资产。</h1>
+    <p>
+      这里展示从 Markdown 生成出来的面试复盘、公司记录、问题库和知识库。后续你把面试内容发给我，我会整理成这些结构化页面。
+    </p>
+  </section>
+
+  <section class="summary-grid" aria-label="知识库概览">
+    <div class="metric">
+      <span>面试复盘</span>
+      <strong>{interviews.length}</strong>
+    </div>
+    <div class="metric">
+      <span>公司记录</span>
+      <strong>{companies.length}</strong>
+    </div>
+    <div class="metric">
+      <span>问题沉淀</span>
+      <strong>{questions.length}</strong>
+    </div>
+    <div class="metric">
+      <span>知识主题</span>
+      <strong>{knowledge.length}</strong>
+    </div>
+  </section>
+
+  <div class="section-header">
+    <h2>最近面试</h2>
+    <a href="/interviews/">查看全部</a>
+  </div>
+  <section class="grid">
+    {
+      latestInterviews.map((entry) => (
+        <ContentCard
+          href={`/interviews/${entry.slug}/`}
+          title={entry.data.title}
+          summary={`${getStatusLabel(entry.data.status)} · ${entry.data.summary}`}
+          date={entry.data.date}
+          tags={entry.data.tags}
+        />
+      ))
+    }
+  </section>
+
+  <div class="section-header">
+    <h2>优先复习</h2>
+    <a href="/knowledge/">进入知识库</a>
+  </div>
+  <section class="grid">
+    {
+      highPriorityKnowledge.map((entry) => (
+        <ContentCard
+          href={`/knowledge/${entry.slug}/`}
+          title={entry.data.title}
+          summary={entry.data.summary}
+          meta={`${entry.data.category} · ${entry.data.priority}优先级`}
+          tags={entry.data.tags}
+        />
+      ))
+    }
+  </section>
+</BaseLayout>

@@ -1,0 +1,122 @@
+---
+import { getCollection } from 'astro:content';
+import ContentCard from '@/components/ContentCard.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { filterByCompany, formatDate, getStatusLabel, sortByDateDesc } from '@/lib/content-utils';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('companies');
+  return entries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry }
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+const companyName = entry.data.company;
+
+const interviews = sortByDateDesc(
+  (await getCollection('interviews')).filter((interview) => interview.data.company === companyName)
+);
+const questions = filterByCompany(await getCollection('questions'), companyName);
+const knowledge = filterByCompany(await getCollection('knowledge'), companyName);
+---
+
+<BaseLayout title={entry.data.title} description={entry.data.summary}>
+  <section class="detail-shell">
+    <article class="article">
+      <p class="eyebrow">{entry.data.role}</p>
+      <h1>{entry.data.title}</h1>
+      <p>{entry.data.summary}</p>
+      <div class="tag-row">
+        {entry.data.tags.map((tag) => <span>{tag}</span>)}
+      </div>
+      <Content />
+    </article>
+    <aside class="side-panel" aria-label="公司元信息">
+      <dl>
+        <dt>公司</dt>
+        <dd>{entry.data.company}</dd>
+        <dt>岗位</dt>
+        <dd>{entry.data.role}</dd>
+        <dt>阶段</dt>
+        <dd>{entry.data.stage}</dd>
+        <dt>最近面试</dt>
+        <dd>{entry.data.lastInterviewDate ? formatDate(entry.data.lastInterviewDate) : '暂无'}</dd>
+      </dl>
+    </aside>
+  </section>
+
+  <section class="related-block" aria-labelledby="company-interviews">
+    <div class="section-header">
+      <h2 id="company-interviews">关联面试复盘</h2>
+      <a href="/interviews/">全部复盘</a>
+    </div>
+    {
+      interviews.length > 0 ? (
+        <div class="grid">
+          {interviews.map((interview) => (
+            <ContentCard
+              href={`/interviews/${interview.slug}/`}
+              title={interview.data.title}
+              summary={`${interview.data.round} · ${getStatusLabel(interview.data.status)}。${interview.data.summary}`}
+              date={interview.data.date}
+              tags={interview.data.tags}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="empty-state">这家公司还没有关联面试复盘。</p>
+      )
+    }
+  </section>
+
+  <section class="related-block" aria-labelledby="company-questions">
+    <div class="section-header">
+      <h2 id="company-questions">关联问题</h2>
+      <a href="/questions/">全部问题</a>
+    </div>
+    {
+      questions.length > 0 ? (
+        <div class="grid">
+          {questions.map((question) => (
+            <ContentCard
+              href={`/questions/${question.slug}/`}
+              title={question.data.title}
+              summary={`${question.data.category} · ${question.data.difficulty}。${question.data.summary}`}
+              meta={question.data.source}
+              tags={question.data.tags}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="empty-state">这家公司还没有关联问题。</p>
+      )
+    }
+  </section>
+
+  <section class="related-block" aria-labelledby="company-knowledge">
+    <div class="section-header">
+      <h2 id="company-knowledge">关联知识点</h2>
+      <a href="/knowledge/">全部知识点</a>
+    </div>
+    {
+      knowledge.length > 0 ? (
+        <div class="grid">
+          {knowledge.map((item) => (
+            <ContentCard
+              href={`/knowledge/${item.slug}/`}
+              title={item.data.title}
+              summary={`${item.data.category} · ${item.data.priority}优先级。${item.data.summary}`}
+              date={item.data.updatedAt}
+              tags={item.data.tags}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="empty-state">这家公司还没有关联知识点。</p>
+      )
+    }
+  </section>
+</BaseLayout>

@@ -1,0 +1,29 @@
+---
+import { getCollection } from 'astro:content';
+import ContentCard from '@/components/ContentCard.astro';
+import PageHero from '@/components/PageHero.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const questions = await getCollection('questions');
+---
+
+<BaseLayout title="问题库">
+  <PageHero
+    eyebrow="Question Bank"
+    title="问题库"
+    summary="把真实面试题拆成推荐回答、扣分点和延伸知识，方便按主题复习。"
+  />
+  <section class="grid">
+    {
+      questions.map((entry) => (
+        <ContentCard
+          href={`/questions/${entry.slug}/`}
+          title={entry.data.title}
+          summary={`${entry.data.category} · ${entry.data.difficulty}。${entry.data.summary}`}
+          meta={entry.data.source}
+          tags={entry.data.tags}
+        />
+      ))
+    }
+  </section>
+</BaseLayout>

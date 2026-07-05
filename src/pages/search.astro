@@ -1,0 +1,113 @@
+﻿---
+import { getCollection } from 'astro:content';
+import PageHero from '@/components/PageHero.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const interviews = await getCollection('interviews');
+const companies = await getCollection('companies');
+const questions = await getCollection('questions');
+const knowledge = await getCollection('knowledge');
+
+const records = [
+  ...interviews.map((entry) => ({
+    type: '面试',
+    title: entry.data.title,
+    summary: entry.data.summary,
+    tags: entry.data.tags,
+    href: `/interviews/${entry.slug}/`
+  })),
+  ...companies.map((entry) => ({
+    type: '公司',
+    title: entry.data.title,
+    summary: entry.data.summary,
+    tags: entry.data.tags,
+    href: `/companies/${entry.slug}/`
+  })),
+  ...questions.map((entry) => ({
+    type: '问题',
+    title: entry.data.title,
+    summary: entry.data.summary,
+    tags: entry.data.tags,
+    href: `/questions/${entry.slug}/`
+  })),
+  ...knowledge.map((entry) => ({
+    type: '知识',
+    title: entry.data.title,
+    summary: entry.data.summary,
+    tags: entry.data.tags,
+    href: `/knowledge/${entry.slug}/`
+  }))
+];
+---
+
+<BaseLayout title="搜索">
+  <PageHero
+    eyebrow="Search"
+    title="搜索"
+    summary="输入公司、技术点、题目或标签，快速找到对应复盘和知识页面。这个原型先用轻量本地搜索，后续可升级 Pagefind。"
+  />
+
+  <input class="search-box" id="searchInput" type="search" placeholder="搜索 React、腾讯、项目经验..." />
+  <section class="grid" id="searchResults" aria-live="polite"></section>
+  <template id="emptyTemplate">
+    <p class="empty-state">没有找到匹配内容。</p>
+  </template>
+
+  <script is:inline type="application/json" id="searchData" set:html={JSON.stringify(records)} />
+  <script>
+    type SearchRecord = {
+      type: string;
+      title: string;
+      summary: string;
+      tags: string[];
+      href: string;
+    };
+
+    const input = document.querySelector<HTMLInputElement>('#searchInput');
+    const results = document.querySelector<HTMLElement>('#searchResults');
+    const emptyTemplate = document.querySelector<HTMLTemplateElement>('#emptyTemplate');
+    const dataElement = document.querySelector<HTMLScriptElement>('#searchData');
+    const records = JSON.parse(dataElement?.textContent || '[]') as SearchRecord[];
+
+    function render(items: SearchRecord[]) {
+      if (!results || !emptyTemplate) return;
+      results.innerHTML = '';
+      if (items.length === 0) {
+        results.append(emptyTemplate.content.cloneNode(true));
+        return;
+      }
+
+      for (const item of items) {
+        const article = document.createElement('article');
+        article.className = 'content-card';
+        article.innerHTML = `
+          <a href="${item.href}">
+            <span class="card-meta">${item.type}</span>
+            <h3>${item.title}</h3>
+            <p>${item.summary}</p>
+            <div class="tag-row">${item.tags.map((tag) => `<span>${tag}</span>`).join('')}</div>
+          </a>
+        `;
+        results.append(article);
+      }
+    }
+
+    function search(query: string) {
+      const normalized = query.trim().toLowerCase();
+      if (!normalized) {
+        render(records);
+        return;
+      }
+
+      render(
+        records.filter((item) => {
+          const haystack = [item.type, item.title, item.summary, ...item.tags].join(' ').toLowerCase();
+          return haystack.includes(normalized);
+        })
+      );
+    }
+
+    input?.addEventListener('input', () => search(input.value));
+    render(records);
+  </script>
+</BaseLayout>

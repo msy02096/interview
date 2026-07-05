@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { formatDate, getStatusLabel } from '@/lib/content-utils';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('interviews');
+  return entries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry }
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+---
+
+<BaseLayout title={entry.data.title} description={entry.data.summary}>
+  <section class="detail-shell">
+    <article class="article">
+      <p class="eyebrow">{entry.data.company} · {entry.data.role}</p>
+      <h1>{entry.data.title}</h1>
+      <p>{entry.data.summary}</p>
+      <div class="tag-row">
+        {entry.data.tags.map((tag) => <span>{tag}</span>)}
+      </div>
+      <Content />
+    </article>
+    <aside class="side-panel" aria-label="面试元信息">
+      <dl>
+        <dt>日期</dt>
+        <dd>{formatDate(entry.data.date)}</dd>
+        <dt>轮次</dt>
+        <dd>{entry.data.round}</dd>
+        <dt>状态</dt>
+        <dd>{getStatusLabel(entry.data.status)}</dd>
+        <dt>回答评分</dt>
+        <dd>{entry.data.score}/100</dd>
+        <dt>分享</dt>
+        <dd>{entry.data.share ? '允许分享' : '私密'}</dd>
+      </dl>
+    </aside>
+  </section>
+</BaseLayout>

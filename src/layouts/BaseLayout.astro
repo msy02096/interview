@@ -1,0 +1,46 @@
+---
+import '../styles/global.css';
+
+type Props = {
+  title: string;
+  description?: string;
+};
+
+const { title, description = '个人面试复盘与知识库' } = Astro.props;
+
+const navItems = [
+  { href: '/', label: '总览' },
+  { href: '/interviews/', label: '面试' },
+  { href: '/companies/', label: '公司' },
+  { href: '/questions/', label: '问题' },
+  { href: '/knowledge/', label: '知识库' },
+  { href: '/search/', label: '搜索' }
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title} · Interview Tracker</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/">
+        <span class="brand-mark">IT</span>
+        <span>
+          <strong>Interview Tracker</strong>
+          <small>面试复盘知识库</small>
+        </span>
+      </a>
+      <nav aria-label="主导航">
+        {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>

@@ -1,0 +1,29 @@
+---
+import { getCollection } from 'astro:content';
+import ContentCard from '@/components/ContentCard.astro';
+import PageHero from '@/components/PageHero.astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const knowledge = await getCollection('knowledge');
+---
+
+<BaseLayout title="知识库">
+  <PageHero
+    eyebrow="Knowledge Base"
+    title="知识库"
+    summary="把面试暴露出的知识缺口沉淀成可复用的解释框架、标准回答和复习重点。"
+  />
+  <section class="grid">
+    {
+      knowledge.map((entry) => (
+        <ContentCard
+          href={`/knowledge/${entry.slug}/`}
+          title={entry.data.title}
+          summary={`${entry.data.category} · ${entry.data.priority}优先级。${entry.data.summary}`}
+          date={entry.data.updatedAt}
+          tags={entry.data.tags}
+        />
+      ))
+    }
+  </section>
+</BaseLayout>
