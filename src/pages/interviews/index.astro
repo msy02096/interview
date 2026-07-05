@@ -18,7 +18,7 @@ const interviews = sortByDateDesc(await getCollection('interviews'));
     {
       interviews.map((entry) => (
         <ContentCard
-          href={`/interviews/${entry.slug}/`}
+          href={`${import.meta.env.BASE_URL}/interviews/${entry.slug}/`}
           title={entry.data.title}
           summary={`${entry.data.company} · ${entry.data.role} · ${getStatusLabel(entry.data.status)}。${entry.data.summary}`}
           date={entry.data.date}

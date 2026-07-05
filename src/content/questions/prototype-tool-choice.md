@@ -1,6 +1,6 @@
 ---
 title: 用过哪些原型设计工具？为什么选择 Mockplus？
-summary: 产品人员问这个问题，通常是在判断协作意识，而不只是工具熟练度。
+summary: 产品问这个问题，通常是在判断协作意识，而不只是工具熟练度。
 category: Product
 difficulty: 基础
 source: 晓数绿景初面

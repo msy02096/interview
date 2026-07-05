@@ -17,7 +17,7 @@ const questions = await getCollection('questions');
     {
       questions.map((entry) => (
         <ContentCard
-          href={`/questions/${entry.slug}/`}
+          href={`${import.meta.env.BASE_URL}/questions/${entry.slug}/`}
           title={entry.data.title}
           summary={`${entry.data.category} · ${entry.data.difficulty}。${entry.data.summary}`}
           meta={entry.data.source}

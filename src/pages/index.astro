@@ -42,13 +42,13 @@ const highPriorityKnowledge = knowledge.filter((entry) => entry.data.priority ==
 
   <div class="section-header">
     <h2>最近面试</h2>
-    <a href="/interviews/">查看全部</a>
+    <a href={`${import.meta.env.BASE_URL}/interviews/`}>查看全部</a>
   </div>
   <section class="grid">
     {
       latestInterviews.map((entry) => (
         <ContentCard
-          href={`/interviews/${entry.slug}/`}
+          href={`${import.meta.env.BASE_URL}/interviews/${entry.slug}/`}
           title={entry.data.title}
           summary={`${getStatusLabel(entry.data.status)} · ${entry.data.summary}`}
           date={entry.data.date}
@@ -60,13 +60,13 @@ const highPriorityKnowledge = knowledge.filter((entry) => entry.data.priority ==
 
   <div class="section-header">
     <h2>优先复习</h2>
-    <a href="/knowledge/">进入知识库</a>
+    <a href={`${import.meta.env.BASE_URL}/knowledge/`}>进入知识库</a>
   </div>
   <section class="grid">
     {
       highPriorityKnowledge.map((entry) => (
         <ContentCard
-          href={`/knowledge/${entry.slug}/`}
+          href={`${import.meta.env.BASE_URL}/knowledge/${entry.slug}/`}
           title={entry.data.title}
           summary={entry.data.summary}
           meta={`${entry.data.category} · ${entry.data.priority}优先级`}

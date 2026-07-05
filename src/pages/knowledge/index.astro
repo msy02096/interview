@@ -17,7 +17,7 @@ const knowledge = await getCollection('knowledge');
     {
       knowledge.map((entry) => (
         <ContentCard
-          href={`/knowledge/${entry.slug}/`}
+          href={`${import.meta.env.BASE_URL}/knowledge/${entry.slug}/`}
           title={entry.data.title}
           summary={`${entry.data.category} · ${entry.data.priority}优先级。${entry.data.summary}`}
           date={entry.data.updatedAt}

@@ -14,28 +14,28 @@ const records = [
     title: entry.data.title,
     summary: entry.data.summary,
     tags: entry.data.tags,
-    href: `/interviews/${entry.slug}/`
+    href: `${import.meta.env.BASE_URL}/interviews/${entry.slug}/`
   })),
   ...companies.map((entry) => ({
     type: '公司',
     title: entry.data.title,
     summary: entry.data.summary,
     tags: entry.data.tags,
-    href: `/companies/${entry.slug}/`
+    href: `${import.meta.env.BASE_URL}/companies/${entry.slug}/`
   })),
   ...questions.map((entry) => ({
     type: '问题',
     title: entry.data.title,
     summary: entry.data.summary,
     tags: entry.data.tags,
-    href: `/questions/${entry.slug}/`
+    href: `${import.meta.env.BASE_URL}/questions/${entry.slug}/`
   })),
   ...knowledge.map((entry) => ({
     type: '知识',
     title: entry.data.title,
     summary: entry.data.summary,
     tags: entry.data.tags,
-    href: `/knowledge/${entry.slug}/`
+    href: `${import.meta.env.BASE_URL}/knowledge/${entry.slug}/`
   }))
 ];
 ---
