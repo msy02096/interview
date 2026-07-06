@@ -1,5 +1,6 @@
 ---
 import { formatDate } from '@/lib/content-utils';
+import { withBase } from '@/lib/paths';
 
 type Props = {
   href: string;
@@ -14,7 +15,7 @@ const { href, title, summary, date, meta, tags = [] } = Astro.props;
 ---
 
 <article class="content-card">
-  <a href={href}>
+  <a href={withBase(href)}>
     <span class="card-meta">{date ? formatDate(date) : meta}</span>
     <h3>{title}</h3>
     <p>{summary}</p>

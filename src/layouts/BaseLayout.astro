@@ -1,4 +1,5 @@
 ---
+import { withBase } from '@/lib/paths';
 import '../styles/global.css';
 
 type Props = {
@@ -8,14 +9,13 @@ type Props = {
 
 const { title, description = '个人面试复盘与知识库' } = Astro.props;
 
-const { BASE_URL } = import.meta.env;
 const navItems = [
-  { href: BASE_URL, label: '总览' },
-  { href: `${BASE_URL}/interviews/`, label: '面试' },
-  { href: `${BASE_URL}/companies/`, label: '公司' },
-  { href: `${BASE_URL}/questions/`, label: '问题' },
-  { href: `${BASE_URL}/knowledge/`, label: '知识库' },
-  { href: `${BASE_URL}/search/`, label: '搜索' }
+  { href: withBase('/'), label: '总览' },
+  { href: withBase('/interviews/'), label: '面试' },
+  { href: withBase('/companies/'), label: '公司' },
+  { href: withBase('/questions/'), label: '问题' },
+  { href: withBase('/knowledge/'), label: '知识库' },
+  { href: withBase('/search/'), label: '搜索' }
 ];
 ---
 
@@ -29,7 +29,7 @@ const navItems = [
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href={import.meta.env.BASE_URL}>
+      <a class="brand" href={withBase('/')}>
         <span class="brand-mark">IT</span>
         <span>
           <strong>Interview Tracker</strong>

@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import ContentCard from '@/components/ContentCard.astro';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { filterByCompany, formatDate, getStatusLabel, sortByDateDesc } from '@/lib/content-utils';
+import { withBase } from '@/lib/paths';
 
 export async function getStaticPaths() {
   const entries = await getCollection('companies');
@@ -51,14 +52,14 @@ const knowledge = filterByCompany(await getCollection('knowledge'), companyName)
   <section class="related-block" aria-labelledby="company-interviews">
     <div class="section-header">
       <h2 id="company-interviews">关联面试复盘</h2>
-      <a href={`${import.meta.env.BASE_URL}/interviews/`}>全部复盘</a>
+      <a href={withBase('/interviews/')}>全部复盘</a>
     </div>
     {
       interviews.length > 0 ? (
         <div class="grid">
           {interviews.map((interview) => (
             <ContentCard
-              href={`${import.meta.env.BASE_URL}/interviews/${interview.slug}/`}
+              href={`/interviews/${interview.slug}/`}
               title={interview.data.title}
               summary={`${interview.data.round} · ${getStatusLabel(interview.data.status)}。${interview.data.summary}`}
               date={interview.data.date}
@@ -75,14 +76,14 @@ const knowledge = filterByCompany(await getCollection('knowledge'), companyName)
   <section class="related-block" aria-labelledby="company-questions">
     <div class="section-header">
       <h2 id="company-questions">关联问题</h2>
-      <a href={`${import.meta.env.BASE_URL}/questions/`}>全部问题</a>
+      <a href={withBase('/questions/')}>全部问题</a>
     </div>
     {
       questions.length > 0 ? (
         <div class="grid">
           {questions.map((question) => (
             <ContentCard
-              href={`${import.meta.env.BASE_URL}/questions/${question.slug}/`}
+              href={`/questions/${question.slug}/`}
               title={question.data.title}
               summary={`${question.data.category} · ${question.data.difficulty}。${question.data.summary}`}
               meta={question.data.source}
@@ -99,14 +100,14 @@ const knowledge = filterByCompany(await getCollection('knowledge'), companyName)
   <section class="related-block" aria-labelledby="company-knowledge">
     <div class="section-header">
       <h2 id="company-knowledge">关联知识点</h2>
-      <a href={`${import.meta.env.BASE_URL}/knowledge/`}>全部知识点</a>
+      <a href={withBase('/knowledge/')}>全部知识点</a>
     </div>
     {
       knowledge.length > 0 ? (
         <div class="grid">
           {knowledge.map((item) => (
             <ContentCard
-              href={`${import.meta.env.BASE_URL}/knowledge/${item.slug}/`}
+              href={`/knowledge/${item.slug}/`}
               title={item.data.title}
               summary={`${item.data.category} · ${item.data.priority}优先级。${item.data.summary}`}
               date={item.data.updatedAt}
