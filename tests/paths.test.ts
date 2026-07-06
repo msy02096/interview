@@ -10,4 +10,8 @@ describe('path helpers', () => {
   it('keeps external urls unchanged', () => {
     expect(withBase('https://example.com/page', '/interview/')).toBe('https://example.com/page');
   });
+
+  it('does not prefix paths that already include the configured base path', () => {
+    expect(withBase('/interview/companies/enemind/', '/interview/')).toBe('/interview/companies/enemind/');
+  });
 });

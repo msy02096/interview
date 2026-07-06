@@ -6,6 +6,12 @@ export function withBase(path: string, base = import.meta.env.BASE_URL ?? '/'): 
   }
 
   const normalizedBase = base.endsWith('/') ? base : `${base}/`;
+  const normalizedBasePath = normalizedBase === '/' ? '/' : normalizedBase.slice(0, -1);
+
+  if (normalizedBasePath !== '/' && (path === normalizedBasePath || path.startsWith(normalizedBase))) {
+    return path;
+  }
+
   const relativePath = path.startsWith('/') ? path.slice(1) : path;
 
   return `${normalizedBase}${relativePath}`.replace(/\/{2,}/g, '/');

@@ -17,7 +17,7 @@ const companies = await getCollection('companies');
     {
       companies.map((entry) => (
         <ContentCard
-          href={`${import.meta.env.BASE_URL}/companies/${entry.slug}/`}
+          href={`/companies/${entry.slug}/`}
           title={entry.data.title}
           summary={`${entry.data.role} · ${entry.data.stage}。${entry.data.summary}`}
           date={entry.data.lastInterviewDate}
