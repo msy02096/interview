@@ -1,0 +1,145 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="UTF-8"><meta name="description" content="个人面试复盘与知识库"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>录入分析 · Interview Tracker</title><link rel="stylesheet" href="/interview/_astro/ingest.BNtWIJMs.css"></head> <body> <header class="site-header"> <a class="brand" href="/interview/"> <span class="brand-mark">IT</span> <span> <strong>Interview Tracker</strong> <small>面试复盘知识库</small> </span> </a> <nav aria-label="主导航"> <a href="/interview/">总览</a><a href="/interview/interviews/">面试</a><a href="/interview/companies/">公司</a><a href="/interview/questions/">问题</a><a href="/interview/knowledge/">知识库</a><a href="/interview/search/">搜索</a> </nav> </header> <main>  <section class="page-hero ingest-hero"> <p class="eyebrow">Admin Ingest</p> <h1>面试录入</h1> <p>粘贴转写文本或上传文档，生成公司、复盘、问题和知识点草稿。</p> </section> <section class="ingest-shell" data-default-api-base> <form class="ingest-panel" id="ingestForm"> <div class="form-grid two-cols"> <label>
+API 地址
+<input name="apiBase" type="url" placeholder="https://your-domain.example"> </label> <label>
+管理口令
+<input name="adminToken" type="password" autocomplete="current-password"> </label> </div> <div class="form-grid three-cols"> <label>
+公司
+<input name="company" type="text" required> </label> <label>
+岗位
+<input name="role" type="text" required> </label> <label>
+日期
+<input name="date" type="date" value="2026-07-07" required> </label> </div> <div class="form-grid three-cols"> <label>
+轮次
+<input name="round" type="text" value="HR 初面" required> </label> <label>
+状态
+<select name="status"> <option value="pending">等待结果</option> <option value="passed">通过</option> <option value="failed">未通过</option> </select> </label> <label>
+发言人
+<input name="speakerMap" type="text" value="发言人1=我；发言人2=HR"> </label> </div> <label>
+转写文本
+<textarea name="text" rows="12" placeholder="粘贴面试转写原文"></textarea> </label> <div class="form-grid two-cols align-end"> <label>
+转写文档
+<input name="file" type="file" accept=".txt,.md,.docx"> </label> <button class="primary-button" type="submit">分析</button> </div> </form> <section class="ingest-panel draft-panel" aria-live="polite"> <div class="section-header compact"> <h2>草稿</h2> <button class="secondary-button" id="commitButton" type="button" disabled>确认入库</button> </div> <div class="status-line" id="statusLine">等待录入。</div> <div class="draft-summary" id="draftSummary"></div> <label>
+草稿 JSON
+<textarea id="draftJson" rows="24" spellcheck="false"></textarea> </label> </section> </section> <script type="module">
+    const shell = document.querySelector('.ingest-shell');
+    const form = document.querySelector('#ingestForm');
+    const statusLine = document.querySelector('#statusLine');
+    const draftSummary = document.querySelector('#draftSummary');
+    const draftJson = document.querySelector('#draftJson');
+    const commitButton = document.querySelector('#commitButton');
+
+    const apiInput = form.elements.namedItem('apiBase');
+    const tokenInput = form.elements.namedItem('adminToken');
+    apiInput.value = localStorage.getItem('interviewIngestApiBase') || shell.dataset.defaultApiBase || '';
+    tokenInput.value = localStorage.getItem('interviewIngestAdminToken') || '';
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      setBusy('分析中...');
+      commitButton.disabled = true;
+
+      try {
+        const payload = await buildAnalyzePayload(new FormData(form));
+        const result = await apiRequest('/api/analyze-interview', payload);
+        draftJson.value = JSON.stringify(result.draft, null, 2);
+        renderDraftSummary(result.draft);
+        commitButton.disabled = false;
+        setStatus('草稿已生成，可以编辑后入库。');
+      } catch (error) {
+        setStatus(error.message, true);
+      }
+    });
+
+    commitButton.addEventListener('click', async () => {
+      setBusy('提交中...');
+      commitButton.disabled = true;
+
+      try {
+        const draft = JSON.parse(draftJson.value);
+        const result = await apiRequest('/api/commit-interview', { draft });
+        setStatus(`已提交 ${result.files.length} 个文件：${result.commitSha.slice(0, 7)}`);
+      } catch (error) {
+        commitButton.disabled = false;
+        setStatus(error.message, true);
+      }
+    });
+
+    async function buildAnalyzePayload(formData) {
+      const file = formData.get('file');
+      const payload = {
+        metadata: {
+          company: formData.get('company'),
+          role: formData.get('role'),
+          round: formData.get('round'),
+          date: formData.get('date'),
+          status: formData.get('status'),
+          speakerMap: formData.get('speakerMap')
+        },
+        text: formData.get('text')
+      };
+
+      if (file && file.size > 0) {
+        payload.fileName = file.name;
+        payload.fileBase64 = await fileToBase64(file);
+      }
+
+      return payload;
+    }
+
+    async function apiRequest(path, body) {
+      const apiBase = apiInput.value.trim().replace(/\/$/, '');
+      const adminToken = tokenInput.value.trim();
+      if (!apiBase) throw new Error('请填写 API 地址。');
+      if (!adminToken) throw new Error('请填写管理口令。');
+
+      localStorage.setItem('interviewIngestApiBase', apiBase);
+      localStorage.setItem('interviewIngestAdminToken', adminToken);
+
+      const response = await fetch(`${apiBase}${path}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Token': adminToken
+        },
+        body: JSON.stringify(body)
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || `请求失败：${response.status}`);
+      return data;
+    }
+
+    async function fileToBase64(file) {
+      const buffer = await file.arrayBuffer();
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      const chunkSize = 0x8000;
+      for (let index = 0; index < bytes.length; index += chunkSize) {
+        binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+      }
+      return btoa(binary);
+    }
+
+    function renderDraftSummary(draft) {
+      draftSummary.innerHTML = '';
+      const items = [
+        ['公司', draft.company?.title],
+        ['复盘', draft.interview?.title],
+        ['问题', `${draft.questions?.length || 0} 条`],
+        ['知识', `${draft.knowledge?.length || 0} 条`]
+      ];
+      for (const [label, value] of items) {
+        const item = document.createElement('span');
+        item.textContent = `${label}：${value || '-'}`;
+        draftSummary.append(item);
+      }
+    }
+
+    function setBusy(message) {
+      setStatus(message);
+    }
+
+    function setStatus(message, isError = false) {
+      statusLine.textContent = message;
+      statusLine.dataset.state = isError ? 'error' : 'ok';
+    }
+  </script>  </main> </body></html>

@@ -1,0 +1,14 @@
+<!DOCTYPE html><html lang="zh-CN"> <head><meta charset="UTF-8"><meta name="description" content="工业软件里的 AI Agent 更适合作为中间层和辅助工具，落地重点是数据、权限、流程和人工确认。"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>工业软件 AI Agent 落地边界 · Interview Tracker</title><link rel="stylesheet" href="/interview/_astro/ingest.BNtWIJMs.css"></head> <body> <header class="site-header"> <a class="brand" href="/interview/"> <span class="brand-mark">IT</span> <span> <strong>Interview Tracker</strong> <small>面试复盘知识库</small> </span> </a> <nav aria-label="主导航"> <a href="/interview/">总览</a><a href="/interview/interviews/">面试</a><a href="/interview/companies/">公司</a><a href="/interview/questions/">问题</a><a href="/interview/knowledge/">知识库</a><a href="/interview/search/">搜索</a> </nav> </header> <main>  <section class="detail-shell"> <article class="article"> <p class="eyebrow">AI · 中优先级</p> <h1>工业软件 AI Agent 落地边界</h1> <p>工业软件里的 AI Agent 更适合作为中间层和辅助工具，落地重点是数据、权限、流程和人工确认。</p> <div class="tag-row"> <span>AI Agent</span><span>工业软件</span><span>MES</span><span>大模型</span> </div> <h2 id="核心判断">核心判断</h2>
+<p>工业软件里的 AI Agent 不一定要自研底层大模型。更现实的路线是用 DeepSeek、千问等通用模型或客户本地模型，把 Agent 做成业务中间层：理解用户问题、调用系统数据、生成分析建议、辅助填报或生成报表。</p>
+<h2 id="落地边界">落地边界</h2>
+<ul>
+<li>数据来源：必须能接 MES、设备、质量、能耗、报表和知识库数据。</li>
+<li>权限控制：不同角色只能访问自己有权限的数据。</li>
+<li>输出约束：生产和质量建议要有数据依据，不能凭空编。</li>
+<li>部署方式：客户有算力可本地部署，没有算力可调用商业 API。</li>
+<li>人工确认：涉及生产调整、质量判定和安全风险时，需要人工确认。</li>
+</ul>
+<h2 id="面试表达">面试表达</h2>
+<blockquote>
+<p>我理解工业软件 AI 更适合先做辅助层，比如查询、总结、报表、异常解释和知识问答。真正要进入生产决策，还需要权限、数据依据和人工确认。</p>
+</blockquote> </article> <aside class="side-panel" aria-label="知识点元信息"> <dl> <dt>分类</dt> <dd>AI</dd> <dt>优先级</dt> <dd>中</dd> <dt>更新时间</dt> <dd>2026/07/07</dd> <dt>分享</dt> <dd>允许分享</dd> </dl> </aside> </section>  </main> </body></html>
