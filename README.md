@@ -59,6 +59,45 @@ companies: [晓数绿景]
 4. Hermes 监听 GitHub 更新并自动部署。
 5. 手机和电脑访问同一个静态网站查看复盘与知识库。
 
+
+## 网页录入分析后台
+
+隐藏入口：`/interview/admin/ingest/`。这个页面只负责录入、预览和编辑草稿；真正的模型调用和 GitHub 提交由独立后端完成，避免把 API key 或 GitHub token 放到浏览器里。
+
+后端启动命令：
+
+```bash
+npm run ingest:server
+```
+
+必需环境变量：
+
+```text
+ADMIN_TOKEN=后台管理口令
+OPENAI_API_KEY=模型服务 API Key
+AI_MODEL=模型名称
+GITHUB_TOKEN=有 repo/workflow 权限的 GitHub Token
+GITHUB_REPOSITORY=msy02096/interview
+GITHUB_BRANCH=main
+```
+
+可选环境变量：
+
+```text
+PORT=8787
+OPENAI_BASE_URL=https://api.openai.com/v1
+CORS_ORIGIN=https://msy02096.github.io
+PUBLIC_INGEST_API_BASE=https://你的后端域名
+```
+
+录入流程：
+
+1. 打开隐藏入口，填写 API 地址和管理口令。
+2. 粘贴转写文本或上传 `.txt` / `.md` / `.docx` 文档。
+3. 填写公司、岗位、轮次、日期、发言人映射等基础信息。
+4. 点击“分析”，得到结构化草稿 JSON。
+5. 编辑确认后点击“确认入库”，后端会生成 Markdown 并提交到 GitHub `main`。
+6. GitHub Pages workflow 自动部署。
 ## Hermes 部署建议
 
 1. GitHub 仓库设为 private。

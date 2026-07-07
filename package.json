@@ -7,7 +7,8 @@
     "dev": "astro dev --host 127.0.0.1",
     "build": "astro check && astro build",
     "preview": "astro preview --host 127.0.0.1",
-    "test": "vitest run"
+    "test": "vitest run",
+    "ingest:server": "node server/ingest-server.mjs"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
